@@ -1,6 +1,5 @@
 const Contact = require("../models/contact.model");
 
-// get all contacts
 const getContacts = async (req, res) => {
   try {
     const contacts = await Contact.find({});
@@ -10,7 +9,6 @@ const getContacts = async (req, res) => {
   }
 };
 
-// get a single contact
 const getContact = async (req, res) => {
   try {
     const { id } = req.params;
@@ -24,32 +22,15 @@ const getContact = async (req, res) => {
   }
 };
 
-// create a contact (from the landing page form)
 const createContact = async (req, res) => {
   try {
-    // The frontend sends: firstname, lastname, company_name, email,
-    // your_interest (array), phone_number, message.
-    // The model expects: name, company, email, phone, service, budget, message.
-    // We map them here so both old and new field shapes work.
-    const b = req.body;
-    const payload = {
-      name:    b.name    || `${b.firstname || ""} ${b.lastname || ""}`.trim() || "Unknown",
-      company: b.company || b.company_name || "",
-      email:   b.email,
-      phone:   b.phone   || String(b.phone_number || ""),
-      service: b.service || (Array.isArray(b.your_interest) ? b.your_interest.join(", ") : b.your_interest) || "",
-      budget:  b.budget  || "Not specified",
-      message: b.message || "",
-      status:  b.status  || "new",
-    };
-    const contact = await Contact.create(payload);
+    const contact = await Contact.create(req.body);
     res.status(201).json(contact);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// update a contact (e.g. change status)
 const updateContact = async (req, res) => {
   try {
     const { id } = req.params;
@@ -64,7 +45,6 @@ const updateContact = async (req, res) => {
   }
 };
 
-// delete a contact
 const deleteContact = async (req, res) => {
   try {
     const { id } = req.params;
